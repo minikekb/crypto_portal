@@ -64,6 +64,16 @@ Rails.application.configure do
   # Suppress logger output for asset requests.
   config.assets.quiet = true
 
+  # Disable asset digests in development to avoid caching issues.
+  config.assets.digest = false
+
+  # Debug mode disables concatenation and preprocessing of assets.
+  # This option may cause significant delays in view rendering with a large number of assets.
+  config.assets.debug = true
+
+  # Don't check for precompiled assets in development.
+  config.assets.check_precompiled_asset = false
+
   # Raises error for missing translations.
   # config.i18n.raise_on_missing_translations = true
 
