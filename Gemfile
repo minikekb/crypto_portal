@@ -58,3 +58,7 @@ group :test do
 end
 
 gem "devise", "~> 4.9"
+
+gem "dotenv", groups: [ :development, :test ]
+
+gem "byebug", group: [ :development, :test ]
