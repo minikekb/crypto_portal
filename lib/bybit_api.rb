@@ -1,48 +1,63 @@
-require "digest"
-require "uri"
 require "net/http"
-require "open-uri"
+require "uri"
 require "openssl"
-require "dotenv/load"
-require "json"
+require "time"
 
 class BybitApi
   BASE_URL = "https://api-testnet.bybit.com"
-  # Когда создаю новый экземпляр класса срабатывает данный метод
+
   def initialize
     @api_key = ENV["BYBIT_API_KEY"]
     @secret_key = ENV["BYBIT_SECRET_KEY"]
     @recv_window = 5000
   end
-  # Данный метод отправляет запрос на Bybit
-  def http_request(end_point, method, payload = "")
-    uri = URI(BASE_URL + end_point)
-    uri.query = payload unless payload.empty?
 
-    # Создание запроса
-    request = create_request(method, uri, payload)
+  # Метод для отправки запросов к API Bybit
+  def http_request(end_point, method, payload)
+    @time_stamp = current_timestamp.to_s # Текущая временная метка
+    signature = gen_signature(payload) # Генерация подписи
 
-    # Отправка запроса
-    https = Net::HTTP.new(uri.host, uri.port)
-    # Вкл шифорвание
+    # Создание полного URL
+    full_url = URI.parse("#{BASE_URL}#{end_point}")
+
+    # Выбор типа запроса
+    request = case method
+    when "POST"
+      req = Net::HTTP::Post.new(full_url, "Content-Type" => "application/json")
+      req.body = payload
+      req
+    when "GET"
+      query_string = "?#{payload}"
+      full_url = URI.parse("#{BASE_URL}#{end_point}#{query_string}")
+      Net::HTTP::Get.new(full_url)
+    else
+     raise "Unsupported HTTP method: #{method}"
+    end
+
+    # Добавление заголовков
+    request["X-BAPI-API-KEY"] = @api_key
+    request["X-BAPI-TIMESTAMP"] = @time_stamp
+    request["X-BAPI-RECV-WINDOW"] = @recv_window.to_s
+    request["X-BAPI-SIGN"] = signature
+
+    # Настройка HTTPS-соединения
+    https = Net::HTTP.new(full_url.host, full_url.port)
     https.use_ssl = true
+    https.verify_mode = OpenSSL::SSL::VERIFY_PEER
 
+    # Отправка запроса и получение ответа
     response = https.request(request)
-    response.read_body  # Возвращаем тело ответа
+    response.body # Возвращаем тело ответа
   end
 
-  private
+  # Метод для получения текущего времени в миллисекундах
+  def current_timestamp
+    (Time.now.to_f * 1000).to_i
+  end
 
-  def create_request(method, uri, payload)
-    case method.upcase
-    when "POST"
-      request = Net::HTTP::Post.new(uri, { "Content-Type" => "application/json" })
-      request.body = payload unless payload.empty?
-    when "GET"
-      request = Net::HTTP::Get.new(uri)
-    else
-      raise "Unsupported HTTP method: #{method}. Use 'GET' or 'POST'."
-    end
-    request
+  # Метод для генерации подписи
+  def gen_signature(payload)
+    param_str = "#{@time_stamp}#{@api_key}#{@recv_window}#{payload}"
+    OpenSSL::HMAC.hexdigest("sha256", @secret_key, param_str)
   end
 end

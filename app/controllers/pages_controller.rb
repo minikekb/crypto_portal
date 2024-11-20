@@ -2,17 +2,19 @@ class PagesController < ApplicationController
   def dashboard
     client = BybitApi.new
 
-    end_point = "/v5/market/tickers"
+    end_point = "/v5/account/wallet-balance"
     method = "GET"
-    payload = "category=spot&symbol=BTCUSDT"
+    payload = "accountType=UNIFIED&coin=BTC"
 
-    # Отпраляем запрос и получаем ответ от Bybit
-    response = client.http_request(end_point, method, payload)
+    begin
+      # Отправляем запрос и получаем ответ от Bybit
+      response = client.http_request(end_point, method, payload)
 
-    # Преобразуем JSON ответ в объект Ruby
-    @api_response = JSON.parse(response)
+      # Убедимся, что response - строка
+      response_body = response.is_a?(Net::HTTPResponse) ? response : response
 
-    # Выведем для отладки
-    Rails.logger.info @api_response
+      # Преобразуем JSON ответ в объект Ruby
+      @api_response = JSON.parse(response_body)
+    end
   end
 end
