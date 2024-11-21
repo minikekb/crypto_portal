@@ -8,8 +8,10 @@
 
 <h1>Tickers от Bybit API</h1>
 
-<% if @api_response %>
-  <pre><%= @api_response %></pre>
+<% if @price %>
+  <pre>Btc <%= @price %></pre>
 <% else %>
   <p>Не удалось получить данные. Попробуйте снова.</p>
 <% end %>
+
+<pre>TotalEquality <%=@wallet_balance %></pre>

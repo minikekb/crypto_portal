@@ -6,9 +6,9 @@ require "time"
 class BybitApi
   BASE_URL = "https://api-testnet.bybit.com"
 
-  def initialize
-    @api_key = ENV["BYBIT_API_KEY"]
-    @secret_key = ENV["BYBIT_SECRET_KEY"]
+  def initialize(api_key, secret_key)
+    @api_key = api_key
+    @secret_key = secret_key
     @recv_window = 5000
   end
 
