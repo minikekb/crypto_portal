@@ -12,6 +12,24 @@ class BybitApi
     @recv_window = 5000
   end
 
+  def fetch_tickers(symbol, category = "inverse")
+    end_point = "/v5/market/tickers"
+    method = "GET"
+    payload = "category=#{category}&symbol=#{symbol}"
+
+    response = http_request(end_point, method, payload)
+    JSON.parse(response.body) # Парсим тело ответа
+  end
+
+  def wallet_balance
+    end_point = "/v5/account/wallet-balance"
+    method = "GET"
+    payload = "accountType=UNIFIED&coin=BTC"
+
+    response = http_request(end_point, method, payload)
+    JSON.parse(response.body) # Парсим тело ответа
+  end
+
   # Метод для отправки запросов к API Bybit
   def http_request(end_point, method, payload)
     @time_stamp = current_timestamp.to_s # Текущая временная метка
@@ -47,7 +65,7 @@ class BybitApi
 
     # Отправка запроса и получение ответа
     response = https.request(request)
-    response.body # Возвращаем тело ответа
+    response # Возвращаем тело ответа
   end
 
   # Метод для получения текущего времени в миллисекундах
