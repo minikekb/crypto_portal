@@ -30,6 +30,21 @@ class BybitApi
     JSON.parse(response.body) # Парсим тело ответа
   end
 
+  def create_order(symbol, side, order_type, qty)
+    end_point = "/v5/order/create"
+    method = "POST"
+    payload = {
+      category: "spot",
+      symbol: symbol,
+      side: side,
+      orderType: order_type,
+      qty: qty
+    }.to_json
+
+    response = http_request(end_point, method, payload)
+    JSON.parse(response.body) # Парсим тело ответа
+  end
+
   # Метод для отправки запросов к API Bybit
   def http_request(end_point, method, payload)
     @time_stamp = current_timestamp.to_s # Текущая временная метка
