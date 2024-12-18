@@ -38,7 +38,8 @@ class BybitApi
       symbol: symbol,
       side: side,
       orderType: order_type,
-      qty: qty
+      qty: qty,
+      marketUnit: "baseCoin"
     }.to_json
 
     response = http_request(end_point, method, payload)

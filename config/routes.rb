@@ -8,4 +8,5 @@ Rails.application.routes.draw do
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   get "dashboard", to: "pages#dashboard"
+  post "create_order", to: "pages#create_order", as: :create_order
 end

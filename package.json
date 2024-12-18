@@ -1,5 +1,10 @@
 {
   "dependencies": {
-    "flowbite": "^2.5.2"
+    "flowbite": "^2.5.2",
+    "postcss": "^8.4.49",
+    "postcss-cli": "^11.0.0"
+  },
+  "scripts": {
+    "watch": "tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --watch"
   }
 }
